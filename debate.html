@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>skeleton</title>
+  <link rel="stylesheet" type="text/css" href="mystyle.css">
+</head>
+<body>
+  
+<!--PHP PROJECTS
+Simple User Profile With Update Profile Info Using PHP/MYSQL
+HARLEY LUMAGUI∙July 20, 2020
+Edited ∙ September 17, 2020
+
+Simple User Profile With Update Profile Info Using PHP/MYSQL
+
+ Good day everyone! Today is another tutorial for all PHP developers, especially for the beginners in PHP programming. I will teach you to create a Simple User Profile With Update Profile Info Using PHP/MYSQL.
+ 
+ This article can answer the question posted in StackOverflow about how to view user’s profiles using PHP.
+ 
+ You can watch the video here to see the running application of User Profile With Update Profile Info Using PHP/MYSQL.
+ 
+ 
+ 
+  
+ 
+ But before that, make sure you are done creating a simple login and registration. If you are not yet, this tutorial might help you. >> click here <<
+Steps to Create User Profile With Update Profile Info Using PHP/MYSQL
+Step 1. First, create a database, name it as any name you desire. In my case, I use “ITSOURCECODE” as the name of the database.-->
+ 
+ <!--Step 2. Then create the”USERS” table then put the following attributes.
+CREATE TABLE `users` (  `user_id` int(11) NOT NULL,
+  `username` text NOT NULL, 
+ `password` text NOT NULL,
+  `full_name` text NOT NULL, 
+ `gender` text NOT NULL, 
+ `age` int(11) NOT NULL, 
+ `address` text NOT NULL) 
+ENGINE=MyISAM DEFAULT CHARSET=latin1;-->
+
+ <!--Make sure you are done doing in the login and registration. A link will be seen and view on the link above. And Make sure to Create a “connection.php” file to hold the database connection to our PHP project.
+<?php
+ $db = mysqli_connect('localhost', 'root', '') or
+        die ('Unable to connect. Check your connection parameters.');
+        mysqli_select_db($db, 'mydb' ) or die(mysqli_error($db));
+?>
+<!--Step 3. For the user’s profile, create and update “profile.php” file then put the following codes.-->
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+  <title>IT SourceCode</title>
+  <link rel="stylesheet" href="libs/css/bootstrap.min.css">
+  <link rel="stylesheet" href="libs/style.css">
+  </head>
+  <?php
+  include 'connection.php';
+  session_start();
+$id=$_SESSION['id'];
+$query=mysqli_query($db,"SELECT * FROM users where user_id='$id'")or die(mysqli_error());
+$row=mysqli_fetch_array($query);
+  ?>
+  <h1>User Profile</h1>
+<div class="profile-input-field">
+        <h3>Please Fill-out All Fields</h3>
+        <form method="post" action="#" >
+          <div class="form-group">
+            <label>Fullname</label>
+            <input type="text" class="form-control" name="fname" style="width:20em;" placeholder="Enter your Fullname" value="<?php echo $row['full_name']; ?>" required />
+          </div>
+          <div class="form-group">
+            <label>Gender</label>
+            <input type="text" class="form-control" name="gender" style="width:20em;" placeholder="Enter your Gender" required value="<?php echo $row['gender']; ?>" />
+          </div>
+          <div class="form-group">
+            <label>Age</label>
+            <input type="number" class="form-control" name="age" style="width:20em;" placeholder="Enter your Age" value="<?php echo $row['age']; ?>">
+          </div>
+          <div class="form-group">
+            <label>Address</label>
+            <input type="text" class="form-control" name="address" style="width:20em;" required placeholder="Enter your Address" value="<?php echo $row['address']; ?>"></textarea>
+          </div>
+          <div class="form-group">
+            <input type="submit" name="submit" class="btn btn-primary" style="width:20em; margin:0;"><br><br>
+            <center>
+             <a href="logout.php">Log out</a>
+           </center>
+          </div>
+        </form>
+      </div>
+      </html>
+      <?php
+      if(isset($_POST['submit'])){
+        $fullname = $_POST['fname'];
+        $gender = $_POST['gender'];
+        $age = $_POST['age'];
+        $address = $_POST['address'];
+      $query = "UPDATE users SET full_name = '$fullname',
+                      gender = '$gender', age = $age, address = '$address'
+                      WHERE user_id = '$id'";
+                    $result = mysqli_query($db, $query) or die(mysqli_error($db));
+                    ?>
+                     <script type="text/javascript">
+            alert("Update Successfull.");
+            window.location = "index.php";
+        </script>
+        <?php
+             }               
+?>
+<!--Step 4. Update the “index.php” file by putting the following codes.-->
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+  <title>IT SourceCode</title>
+  <link rel="stylesheet" href="libs/css/bootstrap.min.css">
+  <link rel="stylesheet" href="libs/style.css">
+  </head>
+  <h1>User Log In</h1>
+<div class="input-field">
+        <h3>Please Fill-out All Fields</h3>
+        <form method="post" action="#" >
+          <div class="form-group">
+            <label>Username</label>
+            <input type="text" class="form-control" name="user" style="width:20em;" placeholder="Enter your Username" required />
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" class="form-control" name="pass" style="width:20em;" placeholder="Enter your Password" required />
+          </div>
+          <div class="form-group">
+            <input type="submit" name="submit" class="btn btn-primary submitBtn" style="width:20em; margin:0;" /><br><br>
+            <center>
+             <a href="register.php">register</a>
+           </center>
+          </div>
+          
+        </form>
+      </div>
+      </html>
+      <?php
+      session_start();
+      include 'connection.php';
+if(isset($_POST['submit'])){
+  $user = $_POST['user'];
+  $pass = $_POST['pass'];
+  $query=mysqli_query($db,"SELECT * FROM users WHERE username = '$user' AND password = '$pass'");
+  $num_rows=mysqli_num_rows($query);
+  $row=mysqli_fetch_array($query);
+  $_SESSION["id"]=$row['user_id'];
+if ($num_rows>0)
+{
+    ?>
+    <script>
+      alert('Successfully Log In');
+      document.location='profile.php'
+    </script>
+    <?php
+}
+}
+      ?>
+<!--Step 5. For registration of user profile information, create “register.php” file then put the following codes.-->
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+  <title>IT SourceCode</title>
+  <link rel="stylesheet" href="libs/css/bootstrap.min.css">
+  <link rel="stylesheet" href="libs/style.css">
+  </head>
+  <h1>Register</h1>
+<div class="reg-input-field">
+        <h3>Please Fill-out All Fields</h3>
+        <form method="post" action="#" >
+          <div class="form-group">
+            <label>Fullname</label>
+            <input type="text" class="form-control" name="fname" style="width:20em;" placeholder="Enter your Fullname" required />
+          </div>
+          <div class="form-group">
+            <label>Gender</label>
+            <input type="text" class="form-control" name="gender" style="width:20em;" placeholder="Enter your Gender" required pattern="[a-zA-Z .]+" />
+          </div>
+          <div class="form-group">
+            <label>Age</label>
+            <input type="number" class="form-control" name="age" style="width:20em;" placeholder="Enter your Age">
+          </div>
+          <div class="form-group">
+            <label>Address</label>
+            <input type="text" class="form-control" name="address" style="width:20em;" required placeholder="Enter your Address"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Username</label>
+            <input type="text" class="form-control" name="user" style="width:20em;" placeholder="Enter your Username">
+          </div><div class="form-group">
+            <label>Password</label>
+            <input type="Password" class="form-control" name="pass" style="width:20em;" required  placeholder="Enter your Password">
+          </div>
+          <div class="form-group">
+            <input type="submit" name="submit" class="btn btn-primary submitBtn" style="width:20em; margin:0;" /><br><br>
+             <center>
+             <a href="index.php">LogIn</a>
+           </center>
+          </div>
+        </form>
+      </div>
+      </html>
+      <?php
+      include 'connection.php';
+if(isset($_POST['submit'])){
+$fname = $_POST['fname'];
+$gender = $_POST['gender'];
+$age = $_POST['age'];
+$address = $_POST['address'];
+$user = $_POST['user'];
+$pass = $_POST['pass'];
+
+
+  $query = "INSERT INTO users
+                (username, password, full_name,gender,age,address)
+                VALUES ('".$user."','".$pass."','".$fname."','".$gender."','".$age."','".$address."')";
+                mysqli_query($db,$query)or die ('Error in updating Database');
+                ?>
+                <script type="text/javascript">
+            alert("Successfull Added.");
+            window.location = "index.php";
+        </script>
+                <?php
+}
+      ?>
+<!--Step 6. For the logout of user action, create “logout.php” file then put the following codes.-->
+<?php
+session_start();
+unset($_SESSION['id']);
+session_destroy();
+header("Location: index.php");
+?>
+
+</body>
+</html>
